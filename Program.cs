@@ -35,6 +35,21 @@ class Program
             
         }
 
+        // Mapear as longitude dos estados
+        var estadosComLongitude = new Dictionary<string, double>();
+        foreach (var estado in estados)
+        {
+            estadosComLongitude[estado.UF] = estado.Longitude;
+        }
+
+        // Mapear as longitude dos municipios
+        var municipiosComLongitude = new Dictionary<string, double>();
+        foreach (var municipio in municipios)
+        {
+            municipiosComLongitude[municipio.Nome.ToUpper()] = municipio.Longitude;
+
+        }
+
         // Construir o novo JSON no formato desejado
         var novoJson = new JObject();
         var estadosArray = new JArray();
@@ -47,20 +62,25 @@ class Program
             var estadoComLatitude = new JObject();
             estadoComLatitude["sigla"] = sigla;
             estadoComLatitude["nome"] = nome;
+
+            var estadoComLongitude = new JObject();
+            estadoComLongitude["sigla"] = sigla;
+            estadoComLongitude["nome"] = nome;
             var cidadesArray = new JArray();
 
             foreach (var cidade in estado["cidades"])
             {
 
-                //var municipio = municipios.Find(m => m.Nome == nomeCidade);
-                //double latitude = municipio != null ? municipio.Latitude : 0.0;
-
                 string nomeCidade = cidade.ToString().ToUpper();
                 double latitude = (municipiosComLatitudes.ContainsKey(nomeCidade) ? municipiosComLatitudes[nomeCidade] : estadosComLatitudes[sigla]);
+                double longitude = (municipiosComLongitude.ContainsKey(nomeCidade) ? municipiosComLongitude[nomeCidade] : estadosComLongitude[sigla]);
+
 
                 var cidadeComLatitude = new JObject();
-                cidadeComLatitude["Municipio"] = nomeCidade;
-                cidadeComLatitude["Latitude"] = latitude;
+                cidadeComLatitude["municipio"] = nomeCidade;
+                cidadeComLatitude["latitude"] = latitude;
+                cidadeComLatitude["longitude"] = longitude;
+
 
                 cidadesArray.Add(cidadeComLatitude);
             }
